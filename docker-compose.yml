@@ -1,0 +1,16 @@
+services:
+
+    postgres:
+      image: postgres:17.1-alpine
+      hostname: postgres
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=serezin-gaming
+      volumes:
+        - serezin-gaming-postgres-dev:/var/lib/postgresql/data
+
+volumes:
+    serezin-gaming-postgres-dev:
