@@ -24,11 +24,14 @@ export class Member {
 
   @OneToOne(() => Tournament, (tournament) => tournament.owner, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   ownTournament?: Tournament;
 
-  @ManyToOne(() => Tournament, (tournament) => tournament.members)
+  @ManyToOne(() => Tournament, (tournament) => tournament.members, {
+    onDelete: 'CASCADE',
+  })
   tournament: Tournament;
 
   @OneToMany(() => TeamMember, (teamMember) => teamMember.member)

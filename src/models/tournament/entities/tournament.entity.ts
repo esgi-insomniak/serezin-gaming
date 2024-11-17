@@ -6,7 +6,9 @@ export class Tournament {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Member, (member) => member.ownTournament)
+  @OneToOne(() => Member, (member) => member.ownTournament, {
+    cascade: true,
+  })
   owner: Member;
 
   @OneToMany(() => Member, (member) => member.tournament)
