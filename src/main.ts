@@ -5,6 +5,7 @@ import * as compression from 'compression';
 import * as fs from 'fs';
 import helmet from 'helmet';
 import * as requestIp from 'request-ip';
+import * as yaml from 'yaml';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -18,7 +19,10 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs', app, document);
-    fs.writeFileSync('./swagger-spec.json', JSON.stringify(document, null, 2));
+    fs.writeFileSync(
+      './swagger-spec.yaml',
+      yaml.stringify(document, { indent: 2 }),
+    );
   }
 
   app.useGlobalPipes(
