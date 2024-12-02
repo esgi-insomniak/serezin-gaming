@@ -7,7 +7,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   DefaultResponse,
   GetResponseArray,
@@ -93,7 +98,7 @@ export class TournamentController {
   }
 
   @Delete(':id')
-  @ApiOkResponse()
+  @ApiNoContentResponse()
   async remove(
     @Param() params: GetItemByIdDto,
   ): Promise<void | DefaultResponse> {
