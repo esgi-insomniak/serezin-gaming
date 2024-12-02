@@ -1,8 +1,8 @@
 import { TeamMember } from 'src/models/teamMember/entities/team-member.entity';
 import { Tier } from 'src/models/tier/entities/tier.entity';
 import { Tournament } from 'src/models/tournament/entities/tournament.entity';
-import { TournamentRole } from 'src/models/tournamentRole/entities/tournament-role.entity';
 import {
+  Column,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -10,14 +10,15 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MemberRoles } from '../enum/roles.enum';
 
 @Entity()
 export class Member {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => TournamentRole, (role) => role.members)
-  role: TournamentRole;
+  @Column({ type: 'enum', enum: MemberRoles, default: MemberRoles.MEMBER })
+  role: MemberRoles;
 
   @ManyToOne(() => Tier, (tier) => tier.members)
   tier: Tier;
