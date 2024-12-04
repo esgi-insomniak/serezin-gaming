@@ -9,7 +9,13 @@ import * as yaml from 'yaml';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('./.infra/local.serezin-gaming.com-key.pem'),
+    cert: fs.readFileSync('./.infra/local.serezin-gaming.com.pem'),
+  };
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions: httpsOptions,
+  });
   const options = new DocumentBuilder()
     .setTitle('Serezin-Gaming docs')
     .setVersion('1.0')
@@ -35,7 +41,11 @@ async function bootstrap() {
   app.use(compression());
   app.use(helmet());
   app.use(requestIp.mw());
-  // app.enableCors({ origin: new ConfigService().get('corsOrigin') });
+  app.enableCors({
+    origin: 'https://local.serezin-gaming.com:5173',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
   // await app.listen(new ConfigService().get('port'));
   await app.listen(process.env.PORT ?? 3000);
 }
