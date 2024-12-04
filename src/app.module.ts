@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PaginationInterceptor } from './common/interceptors/pagination.interceptor';
+import { ResponseFormaterInterceptor } from './common/interceptors/response-formater.interceptor';
 import typeorm from './config/database/typeorm';
 import { TournamentModule } from './models/tournament/tournament.module';
 
@@ -17,6 +20,15 @@ import { TournamentModule } from './models/tournament/tournament.module';
     }),
     TournamentModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PaginationInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseFormaterInterceptor,
+    },
+  ],
 })
 export class AppModule {}

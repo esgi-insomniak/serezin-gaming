@@ -2,7 +2,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -13,20 +15,19 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  DefaultResponse,
-  GetResponseArray,
-  GetResponseOne,
-} from 'src/common/interfaces/response.interface';
-import { GetItemByIdDto } from 'src/common/validators/params.dto';
-import { GetItemsPaginationDto } from 'src/common/validators/query.dto';
+import { Pagination } from 'src/common/decorators/pagination.decorator';
+import { ResponseMessage } from 'src/common/decorators/response.decorator';
+import { ControllerResponseData } from 'src/common/interceptors/response-formater.interceptor';
+import { ParamGetItemByIdDto } from 'src/common/validators/params.dto';
+import { QueryPaginationDto } from 'src/common/validators/query.dto';
+import { DeleteResult } from 'typeorm';
 import { Member } from '../member/entities/member.entity';
 import { MemberRoles } from '../member/enum/roles.enum';
 import { Tournament } from './entities/tournament.entity';
 import { TournamentService } from './tournament.service';
 import {
+  TournamentArrayResponseDto,
   TournamentResponseDto,
-  TournamentsResponseDto,
 } from './validators/tournament.response.dto';
 
 @Controller('tournament')
@@ -35,47 +36,46 @@ export class TournamentController {
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get()
-  @ApiOkResponse({ type: TournamentsResponseDto })
+  @ApiOkResponse({ type: TournamentArrayResponseDto })
+  @Pagination({
+    itemsPerPage: 10,
+    maxItemsPerPage: 50,
+  })
+  @ResponseMessage([
+    { status: HttpStatus.OK, message: 'Sucessfully fetched Tournaments' },
+  ])
   async findAll(
-    @Query() query: GetItemsPaginationDto,
-  ): Promise<GetResponseArray<Tournament>> {
-    const response: GetResponseArray<Tournament> = {
-      items: [],
-      status: HttpStatus.OK,
-    };
-
-    try {
-      response.items = await this.tournamentService.findAll(query);
-    } catch {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-
-    return response;
+    @Query() query: QueryPaginationDto,
+  ): Promise<ControllerResponseData<Tournament[]>> {
+    return await this.tournamentService.findAll(query);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: TournamentResponseDto })
+  @ResponseMessage([
+    { status: HttpStatus.OK, message: 'Sucessfully fetched Tournament' },
+    { status: HttpStatus.NOT_FOUND, message: 'Tournament not found' },
+  ])
   async findOne(
-    @Param() params: GetItemByIdDto,
-  ): Promise<GetResponseOne<Tournament>> {
-    const response: GetResponseOne<Tournament> = {
-      item: null,
-      status: HttpStatus.OK,
+    @Param() params: ParamGetItemByIdDto,
+  ): Promise<ControllerResponseData<Tournament>> {
+    const tournament = await this.tournamentService.findOne(params);
+    if (!tournament) throw new NotFoundException();
+    return {
+      result: tournament,
     };
-
-    try {
-      response.item = await this.tournamentService.findOne(params);
-      if (!response.item) response.status = HttpStatus.NOT_FOUND;
-    } catch {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-
-    return response;
   }
 
   @Post()
   @ApiCreatedResponse({ type: TournamentResponseDto })
-  async create(): Promise<GetResponseOne<Tournament>> {
+  @ResponseMessage([
+    { status: HttpStatus.CREATED, message: 'Sucessfully created Tournament' },
+    {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to create Tournament',
+    },
+  ])
+  async create(): Promise<ControllerResponseData<Tournament>> {
     // By default, owner is also a member of the tournament
     const owner = new Member();
     owner.role = MemberRoles.OWNER;
@@ -83,36 +83,28 @@ export class TournamentController {
     tournament.owner = owner;
     tournament.members = [owner];
 
-    const response: GetResponseOne<Tournament> = {
-      item: null,
-      status: HttpStatus.CREATED,
+    return {
+      result: await this.tournamentService.create(tournament),
     };
-
-    try {
-      response.item = await this.tournamentService.create(tournament);
-    } catch {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    }
-
-    return response;
   }
 
   @Delete(':id')
   @ApiNoContentResponse()
+  @ResponseMessage([
+    { status: HttpStatus.NOT_FOUND, message: 'Tournament not found' },
+    {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to delete Tournament',
+    },
+  ])
+  @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
-    @Param() params: GetItemByIdDto,
-  ): Promise<void | DefaultResponse> {
-    const errorResponse: DefaultResponse = {
-      status: HttpStatus.FORBIDDEN,
+    @Param() params: ParamGetItemByIdDto,
+  ): Promise<ControllerResponseData<DeleteResult>> {
+    const tournament = await this.tournamentService.findOne(params);
+    if (!tournament) throw new NotFoundException();
+    return {
+      result: await this.tournamentService.remove(params),
     };
-
-    try {
-      const foundTournament = await this.tournamentService.findOne(params);
-      if (!foundTournament) return errorResponse;
-      await this.tournamentService.remove(params);
-    } catch {
-      errorResponse.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      return errorResponse;
-    }
   }
 }

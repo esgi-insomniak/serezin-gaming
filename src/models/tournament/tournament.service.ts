@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ParamGetItemById } from 'src/common/interfaces/params.interface';
-import { QueryGetItems } from 'src/common/interfaces/query.interface';
-import { Repository } from 'typeorm';
+import { QueryPagination } from 'src/common/interfaces/query.interface';
+import {
+  PaginateResponse,
+  PaginationService,
+} from 'src/services/pagination.service';
+import { DeleteResult, Repository } from 'typeorm';
 import { Tournament } from './entities/tournament.entity';
 
 @Injectable()
@@ -10,32 +14,35 @@ export class TournamentService {
   constructor(
     @InjectRepository(Tournament)
     private readonly tournamentRepository: Repository<Tournament>,
+    @Inject(PaginationService)
+    private readonly paginationService: PaginationService,
   ) {}
 
-  async findAll(query: QueryGetItems): Promise<Tournament[]> {
-    return this.tournamentRepository.find({
-      take: query.limit || 10,
-      skip: query.offset * query.limit || 0,
-      relations: ['members', 'owner'],
-    });
+  async findAll(query: QueryPagination): Promise<PaginateResponse<Tournament>> {
+    return await this.paginationService.paginate(
+      this.tournamentRepository,
+      query,
+    );
   }
 
   async findOne(params: ParamGetItemById): Promise<Tournament | null> {
-    return this.tournamentRepository.findOne({
+    return await this.tournamentRepository.findOne({
       where: { id: params.id },
-      relations: ['members', 'owner'],
+      loadRelationIds: true,
     });
   }
 
   async create(tournament: Tournament): Promise<Tournament> {
-    return this.tournamentRepository.save(tournament);
+    await this.tournamentRepository.save(tournament);
+    return this.findOne({ id: tournament.id });
   }
 
   async update(tournament: Tournament): Promise<Tournament> {
-    return this.tournamentRepository.save({ ...tournament });
+    await this.tournamentRepository.save({ ...tournament });
+    return this.findOne({ id: tournament.id });
   }
 
-  async remove(params: ParamGetItemById): Promise<void> {
-    await this.tournamentRepository.delete({ id: params.id });
+  async remove(params: ParamGetItemById): Promise<DeleteResult> {
+    return await this.tournamentRepository.delete({ id: params.id });
   }
 }

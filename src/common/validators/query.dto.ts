@@ -2,18 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
-export class GetItemsPaginationDto {
+export class QueryPaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  limit: number;
+  itemsPerPage: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @Min(0)
-  offset: number;
+  @Min(1)
+  page: number;
 }

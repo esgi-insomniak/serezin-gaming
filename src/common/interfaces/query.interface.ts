@@ -1,4 +1,4 @@
-export interface QueryGetItems {
-  limit: number;
-  offset: number;
+export interface QueryPagination {
+  itemsPerPage: number;
+  page: number;
 }
