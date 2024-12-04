@@ -1,5 +1,11 @@
 import { Member } from 'src/models/member/entities/member.entity';
-import { Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Tournament {
@@ -13,4 +19,7 @@ export class Tournament {
 
   @OneToMany(() => Member, (member) => member.tournament)
   members: Member[];
+
+  @Column({ type: 'boolean', default: false })
+  isArchived: boolean;
 }

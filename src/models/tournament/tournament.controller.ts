@@ -15,6 +15,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Authorization } from 'src/common/decorators/authorization.decorator';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { ControllerResponseData } from 'src/common/interceptors/response-formater.interceptor';
@@ -36,6 +37,7 @@ export class TournamentController {
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get()
+  @Authorization(true)
   @ApiOkResponse({ type: TournamentArrayResponseDto })
   @Pagination({
     itemsPerPage: 10,

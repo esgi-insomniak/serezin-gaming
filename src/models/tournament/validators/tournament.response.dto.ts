@@ -6,6 +6,7 @@ const TournamentExample = {
   id: '51d0af06-f14b-4932-bba8-697201468cda',
   owner: '60f51f4e-4e15-4c2b-9ba9-7675c850d81a',
   members: ['60f51f4e-4e15-4c2b-9ba9-7675c850d81a'],
+  isArchived: false,
 };
 
 export class TournamentDto {
@@ -17,6 +18,9 @@ export class TournamentDto {
 
   @ApiProperty()
   members: string[];
+
+  @ApiProperty()
+  isArchived: boolean;
 }
 
 export class TournamentArrayResponseDto extends OmitType(

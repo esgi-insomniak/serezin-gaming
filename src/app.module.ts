@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaginationInterceptor } from './common/interceptors/pagination.interceptor';
 import { ResponseFormaterInterceptor } from './common/interceptors/response-formater.interceptor';
 import typeorm from './config/database/typeorm';
+import { AuthGuard } from './guard/auth.guard';
 import { TournamentModule } from './models/tournament/tournament.module';
 
 @Module({
@@ -21,6 +22,10 @@ import { TournamentModule } from './models/tournament/tournament.module';
     TournamentModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: PaginationInterceptor,

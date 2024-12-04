@@ -21,6 +21,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TournamentArrayResponseDto'
+      security:
+        - defaultBearerAuth: []
       tags: &a1
         - Tournament
     post:
@@ -88,10 +90,13 @@ components:
           type: array
           items:
             type: string
+        isArchived:
+          type: boolean
       required:
         - id
         - owner
         - members
+        - isArchived
     ResponsePaginationMetaDto:
       type: object
       properties:
@@ -179,6 +184,7 @@ components:
               owner: 60f51f4e-4e15-4c2b-9ba9-7675c850d81a
               members:
                 - 60f51f4e-4e15-4c2b-9ba9-7675c850d81a
+              isArchived: false
           type: array
           items:
             $ref: '#/components/schemas/TournamentDto'
