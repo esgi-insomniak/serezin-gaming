@@ -13,6 +13,7 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Authorization } from 'src/common/decorators/authorization.decorator';
@@ -46,6 +47,9 @@ export class TournamentController {
   @ResponseMessage([
     { status: HttpStatus.OK, message: 'Sucessfully fetched Tournaments' },
   ])
+  @ApiOperation({
+    operationId: 'tournamentFindAll',
+  })
   async findAll(
     @Query() query: QueryPaginationDto,
   ): Promise<ControllerResponseData<Tournament[]>> {
@@ -58,6 +62,9 @@ export class TournamentController {
     { status: HttpStatus.OK, message: 'Sucessfully fetched Tournament' },
     { status: HttpStatus.NOT_FOUND, message: 'Tournament not found' },
   ])
+  @ApiOperation({
+    operationId: 'tournamentFindOne',
+  })
   async findOne(
     @Param() params: ParamGetItemByIdDto,
   ): Promise<ControllerResponseData<Tournament>> {
@@ -77,6 +84,9 @@ export class TournamentController {
       message: 'Failed to create Tournament',
     },
   ])
+  @ApiOperation({
+    operationId: 'tournamentCreate',
+  })
   async create(): Promise<ControllerResponseData<Tournament>> {
     // By default, owner is also a member of the tournament
     const owner = new Member();
@@ -100,6 +110,9 @@ export class TournamentController {
     },
   ])
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    operationId: 'tournamentRemove',
+  })
   async remove(
     @Param() params: ParamGetItemByIdDto,
   ): Promise<ControllerResponseData<DeleteResult>> {

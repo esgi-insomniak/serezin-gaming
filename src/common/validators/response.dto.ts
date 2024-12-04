@@ -10,7 +10,7 @@ export function withBaseResponse<TBase extends Constructor>(
   options?: ApiPropertyOptions | undefined,
 ) {
   class ResponseDto {
-    @ApiProperty({ enum: HttpStatus, example: 200 })
+    @ApiProperty({ example: 200 })
     @IsNumber()
     statusCode: HttpStatus;
 
