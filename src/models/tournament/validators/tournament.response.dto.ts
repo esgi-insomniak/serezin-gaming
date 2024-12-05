@@ -1,6 +1,11 @@
+import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { ResponsePaginationMetaDto } from 'src/common/validators/metadata.dto';
-import { withBaseResponse } from 'src/common/validators/response.dto';
+import {
+  withBaseErrorResponse,
+  withBaseResponse,
+} from 'src/common/validators/response.dto';
+import { TournamentResponseMessageEnum } from '../constants/tournament.response.constant';
 
 const TournamentExample = {
   id: '51d0af06-f14b-4932-bba8-697201468cda',
@@ -23,17 +28,46 @@ export class TournamentDto {
   isArchived: boolean;
 }
 
-export class TournamentArrayResponseDto extends OmitType(
-  withBaseResponse(TournamentDto, {
-    isArray: true,
-    example: [TournamentExample],
-  }),
+export class TournamentArrayOkResponseDto extends OmitType(
+  withBaseResponse(
+    TournamentDto,
+    { statusCode: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+    {
+      isArray: true,
+      example: [TournamentExample],
+    },
+  ),
   ['meta'],
 ) {
   @ApiProperty()
   meta: ResponsePaginationMetaDto;
 }
 
-export class TournamentResponseDto extends withBaseResponse(TournamentDto, {
-  example: TournamentExample,
+export class TournamentOKResponseDto extends withBaseResponse(
+  TournamentDto,
+  { statusCode: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+  {
+    example: TournamentExample,
+  },
+) {}
+
+export class TournamentCreatedResponseDto extends withBaseResponse(
+  TournamentDto,
+  {
+    statusCode: HttpStatus.CREATED,
+    message: TournamentResponseMessageEnum.CREATED,
+  },
+  {
+    example: TournamentExample,
+  },
+) {}
+
+export class TournamentNotFoundResponseDto extends withBaseErrorResponse({
+  statusCode: HttpStatus.NOT_FOUND,
+  message: TournamentResponseMessageEnum.NOT_FOUND,
+}) {}
+
+export class TournamentBadRequestResponseDto extends withBaseErrorResponse({
+  statusCode: HttpStatus.BAD_REQUEST,
+  message: TournamentResponseMessageEnum.BAD_REQUEST,
 }) {}

@@ -2,19 +2,24 @@ import { HttpStatus, mixin } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { ResponseMessageEnum } from '../constants/response.constant';
 
 type Constructor<T = object> = new (...args: any[]) => T;
 
 export function withBaseResponse<TBase extends Constructor>(
   Base: TBase,
+  exampleData: {
+    statusCode: HttpStatus;
+    message: string;
+  },
   options?: ApiPropertyOptions | undefined,
 ) {
   class ResponseDto {
-    @ApiProperty({ example: 200 })
+    @ApiProperty({ example: exampleData.statusCode })
     @IsNumber()
     statusCode: HttpStatus;
 
-    @ApiProperty({ example: 'Success' })
+    @ApiProperty({ example: exampleData.message })
     @IsString()
     message: string;
 
@@ -30,5 +35,36 @@ export function withBaseResponse<TBase extends Constructor>(
     @ValidateNested({ each: true })
     meta: { [key: string]: any };
   }
+
   return mixin(ResponseDto);
 }
+
+export function withBaseErrorResponse(exampleData: {
+  statusCode: HttpStatus;
+  message: string;
+}) {
+  class ErrorResponseDto {
+    @ApiProperty({ example: exampleData.statusCode })
+    @IsNumber()
+    statusCode: HttpStatus;
+
+    @ApiProperty({
+      properties: {
+        message: {
+          oneOf: [{ type: 'string' }, { type: 'string[]' }],
+          example: exampleData.message,
+        },
+      },
+    } as ApiPropertyOptions)
+    error: {
+      message: string | string[];
+    };
+  }
+
+  return mixin(ErrorResponseDto);
+}
+
+export class InternalServerErrorResponseDto extends withBaseErrorResponse({
+  statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  message: ResponseMessageEnum.INTERNAL_SERVER_ERROR,
+}) {}
