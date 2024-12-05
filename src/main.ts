@@ -27,7 +27,7 @@ async function bootstrap() {
     SwaggerModule.setup('docs', app, document);
     fs.writeFileSync(
       './swagger-spec.yaml',
-      yaml.stringify(document, { indent: 2 }),
+      yaml.stringify(document, { indent: 2, singleQuote: true }),
     );
   }
 
