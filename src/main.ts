@@ -18,6 +18,7 @@ async function bootstrap() {
   });
   const options = new DocumentBuilder()
     .setTitle('Serezin-Gaming docs')
+    .setOpenAPIVersion('3.1.0')
     .setVersion('1.0')
     .addBearerAuth(undefined, 'defaultBearerAuth')
     .build();

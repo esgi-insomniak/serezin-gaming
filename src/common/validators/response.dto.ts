@@ -51,7 +51,10 @@ export function withBaseErrorResponse(exampleData: {
     @ApiProperty({
       properties: {
         message: {
-          oneOf: [{ type: 'string' }, { type: 'string[]' }],
+          oneOf: [
+            { type: 'string' },
+            { type: 'array', items: { type: 'string' } },
+          ],
           example: exampleData.message,
         },
       },
