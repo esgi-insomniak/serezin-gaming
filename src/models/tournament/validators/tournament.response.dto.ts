@@ -5,7 +5,7 @@ import {
   withBaseErrorResponse,
   withBaseResponse,
 } from 'src/common/validators/response.dto';
-import { TournamentResponseMessageEnum } from '../constants/tournament.response.constant';
+import { TournamentResponseMessageEnum } from '../enum/tournament.response.enum';
 
 const TournamentExample = {
   id: '51d0af06-f14b-4932-bba8-697201468cda',

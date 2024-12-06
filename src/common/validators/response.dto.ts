@@ -2,7 +2,7 @@ import { HttpStatus, mixin } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsString, ValidateNested } from 'class-validator';
-import { ResponseMessageEnum } from '../constants/response.constant';
+import { ResponseMessageEnum } from '../enum/response.enum';
 
 type Constructor<T = object> = new (...args: any[]) => T;
 

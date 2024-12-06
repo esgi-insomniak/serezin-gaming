@@ -10,15 +10,19 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MemberRoles } from '../enum/roles.enum';
+import { MemberRolesEnum } from '../enum/roles.enum';
 
 @Entity()
 export class Member {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: MemberRoles, default: MemberRoles.MEMBER })
-  role: MemberRoles;
+  @Column({
+    type: 'enum',
+    enum: MemberRolesEnum,
+    default: MemberRolesEnum.MEMBER,
+  })
+  role: MemberRolesEnum;
 
   @ManyToOne(() => Tier, (tier) => tier.members)
   tier: Tier;

@@ -27,9 +27,9 @@ import { QueryPaginationDto } from 'src/common/validators/query.dto';
 import { InternalServerErrorResponseDto } from 'src/common/validators/response.dto';
 import { DeleteResult } from 'typeorm';
 import { Member } from '../member/entities/member.entity';
-import { MemberRoles } from '../member/enum/roles.enum';
-import { TournamentResponseMessageEnum } from './constants/tournament.response.constant';
+import { MemberRolesEnum } from '../member/enum/roles.enum';
 import { Tournament } from './entities/tournament.entity';
+import { TournamentResponseMessageEnum } from './enum/tournament.response.enum';
 import { TournamentService } from './tournament.service';
 import {
   TournamentArrayOkResponseDto,
@@ -105,7 +105,7 @@ export class TournamentController {
   async create(): Promise<ControllerResponseData<Tournament>> {
     // By default, owner is also a member of the tournament
     const owner = new Member();
-    owner.role = MemberRoles.OWNER;
+    owner.role = MemberRolesEnum.OWNER;
     const tournament = new Tournament();
     tournament.owner = owner;
     tournament.members = [owner];
