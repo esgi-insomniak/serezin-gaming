@@ -12,6 +12,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -19,12 +20,16 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Authorization } from 'src/common/decorators/authorization.decorator';
 import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import { ControllerResponseData } from 'src/common/interfaces/response.interface';
 import { ParamGetItemByIdDto } from 'src/common/validators/params.dto';
 import { QueryPaginationDto } from 'src/common/validators/query.dto';
-import { InternalServerErrorResponseDto } from 'src/common/validators/response.dto';
+import {
+  ForbiddenResponseDto,
+  InternalServerErrorResponseDto,
+} from 'src/common/validators/response.dto';
 import { DeleteResult } from 'typeorm';
 import { Member } from '../member/entities/member.entity';
 import { MemberRolesEnum } from '../member/enum/roles.enum';
@@ -53,7 +58,10 @@ export class TournamentController {
     maxItemsPerPage: 50,
   })
   @ResponseMessage([
-    { status: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+    {
+      status: HttpStatus.OK,
+      message: TournamentResponseMessageEnum.OK.FIND_ALL,
+    },
   ])
   @ApiOperation({
     operationId: 'tournamentFindAll',
@@ -70,10 +78,13 @@ export class TournamentController {
   @ApiBadRequestResponse({ type: TournamentBadRequestResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @ResponseMessage([
-    { status: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+    {
+      status: HttpStatus.OK,
+      message: TournamentResponseMessageEnum.OK.FIND_ONE,
+    },
     {
       status: HttpStatus.NOT_FOUND,
-      message: TournamentResponseMessageEnum.NOT_FOUND,
+      message: TournamentResponseMessageEnum.NOT_FOUND.DEFAULT,
     },
   ])
   @ApiOperation({
@@ -90,13 +101,15 @@ export class TournamentController {
   }
 
   @Post()
+  @Authorization(true)
   @ApiCreatedResponse({ type: TournamentCreatedResponseDto })
+  @ApiForbiddenResponse({ type: ForbiddenResponseDto })
   @ApiBadRequestResponse({ type: TournamentBadRequestResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @ResponseMessage([
     {
       status: HttpStatus.CREATED,
-      message: TournamentResponseMessageEnum.CREATED,
+      message: TournamentResponseMessageEnum.CREATED.DEFAULT,
     },
   ])
   @ApiOperation({
@@ -116,13 +129,14 @@ export class TournamentController {
   }
 
   @Delete(':id')
+  @Authorization(true)
   @ApiNoContentResponse()
   @ApiNotFoundResponse({ type: TournamentNotFoundResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @ResponseMessage([
     {
       status: HttpStatus.NOT_FOUND,
-      message: TournamentResponseMessageEnum.NOT_FOUND,
+      message: TournamentResponseMessageEnum.NOT_FOUND.DEFAULT,
     },
   ])
   @HttpCode(HttpStatus.NO_CONTENT)

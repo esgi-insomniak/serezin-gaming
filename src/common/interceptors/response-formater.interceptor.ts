@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   HttpException,
+  HttpStatus,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
@@ -60,7 +61,9 @@ export class ExceptionFormaterInterceptor<T>
         next: (): void => {},
         error: (exception: Error): void => {
           const statusCode =
-            exception instanceof HttpException ? exception.getStatus() : 500;
+            exception instanceof HttpException
+              ? exception.getStatus()
+              : HttpStatus.INTERNAL_SERVER_ERROR;
           const errorMessage =
             this.reflector
               .get<ResponseMessageDecorator>(
@@ -73,7 +76,10 @@ export class ExceptionFormaterInterceptor<T>
               : 'Internal Server Error');
 
           // TODO: Setup Error Logger
-          if (exception instanceof HttpException && statusCode >= 500)
+          if (
+            exception instanceof HttpException &&
+            statusCode >= HttpStatus.INTERNAL_SERVER_ERROR
+          )
             console.error(exception);
 
           context

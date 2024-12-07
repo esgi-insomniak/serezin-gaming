@@ -71,3 +71,8 @@ export class InternalServerErrorResponseDto extends withBaseErrorResponse({
   statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
   message: ResponseMessageEnum.INTERNAL_SERVER_ERROR,
 }) {}
+
+export class ForbiddenResponseDto extends withBaseErrorResponse({
+  statusCode: HttpStatus.FORBIDDEN,
+  message: ResponseMessageEnum.FORBIDDEN,
+}) {}

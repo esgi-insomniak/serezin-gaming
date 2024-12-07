@@ -7,21 +7,25 @@ import {
   ExceptionFormaterInterceptor,
   ResponseFormaterInterceptor,
 } from './common/interceptors/response-formater.interceptor';
-import typeorm from './config/database/typeorm';
+import { TypedConfigModule } from './common/modules/typed-config.module';
+import TypeORMConfig from './config/database/typeorm.config';
 import { AuthGuard } from './guard/auth.guard';
+import { AuthenticationModule } from './models/authentication/authentication.module';
 import { TournamentModule } from './models/tournament/tournament.module';
 
 @Module({
   imports: [
+    TypedConfigModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeorm],
+      load: [TypeORMConfig],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         configService.get('typeorm'),
     }),
+    AuthenticationModule,
     TournamentModule,
   ],
   providers: [

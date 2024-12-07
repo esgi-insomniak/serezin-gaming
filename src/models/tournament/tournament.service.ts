@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ParamGetItemById } from 'src/common/interfaces/params.interface';
 import { QueryPagination } from 'src/common/interfaces/query.interface';
 import {
   PaginateResponse,
   PaginationService,
-} from 'src/services/pagination.service';
+} from 'src/common/services/pagination.service';
 import { DeleteResult, Repository } from 'typeorm';
 import { Tournament } from './entities/tournament.entity';
 
@@ -14,7 +14,6 @@ export class TournamentService {
   constructor(
     @InjectRepository(Tournament)
     private readonly tournamentRepository: Repository<Tournament>,
-    @Inject(PaginationService)
     private readonly paginationService: PaginationService,
   ) {}
 

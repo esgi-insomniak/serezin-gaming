@@ -31,7 +31,10 @@ export class TournamentDto {
 export class TournamentArrayOkResponseDto extends OmitType(
   withBaseResponse(
     TournamentDto,
-    { statusCode: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+    {
+      statusCode: HttpStatus.OK,
+      message: TournamentResponseMessageEnum.OK.FIND_ALL,
+    },
     {
       isArray: true,
       example: [TournamentExample],
@@ -45,7 +48,10 @@ export class TournamentArrayOkResponseDto extends OmitType(
 
 export class TournamentOKResponseDto extends withBaseResponse(
   TournamentDto,
-  { statusCode: HttpStatus.OK, message: TournamentResponseMessageEnum.OK },
+  {
+    statusCode: HttpStatus.OK,
+    message: TournamentResponseMessageEnum.OK.FIND_ONE,
+  },
   {
     example: TournamentExample,
   },
@@ -55,7 +61,7 @@ export class TournamentCreatedResponseDto extends withBaseResponse(
   TournamentDto,
   {
     statusCode: HttpStatus.CREATED,
-    message: TournamentResponseMessageEnum.CREATED,
+    message: TournamentResponseMessageEnum.CREATED.DEFAULT,
   },
   {
     example: TournamentExample,
@@ -64,10 +70,10 @@ export class TournamentCreatedResponseDto extends withBaseResponse(
 
 export class TournamentNotFoundResponseDto extends withBaseErrorResponse({
   statusCode: HttpStatus.NOT_FOUND,
-  message: TournamentResponseMessageEnum.NOT_FOUND,
+  message: TournamentResponseMessageEnum.NOT_FOUND.DEFAULT,
 }) {}
 
 export class TournamentBadRequestResponseDto extends withBaseErrorResponse({
   statusCode: HttpStatus.BAD_REQUEST,
-  message: TournamentResponseMessageEnum.BAD_REQUEST,
+  message: TournamentResponseMessageEnum.BAD_REQUEST.DEFAULT,
 }) {}
