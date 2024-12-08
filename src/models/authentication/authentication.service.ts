@@ -123,8 +123,16 @@ export class AuthenticationService {
         ) || null;
 
       return {
-        user: authorizationInformations.user,
-        riot: riotConnection,
+        discord: {
+          id: authorizationInformations.user.id,
+          username: authorizationInformations.user.username,
+          avatar: authorizationInformations.user.avatar,
+          global_name: authorizationInformations.user.global_name,
+        },
+        riot: {
+          id: riotConnection?.id,
+          name: riotConnection?.name,
+        },
         token: {
           type: 'Bearer',
           access_token: bearerToken.replace('Bearer ', ''),
