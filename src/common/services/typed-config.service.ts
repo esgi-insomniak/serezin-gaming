@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LeafTypes, Leaves } from 'src/common/interfaces/config.intercae';
+import { LeafTypes, Leaves } from 'src/common/interfaces/utils.interface';
 import { EnvironmentVariables } from 'src/config/env.config';
 
 @Injectable()

@@ -1,3 +1,5 @@
+import { OAuth2Scopes } from 'discord-api-types/v10';
+
 export const EnvironmentVariables = () => ({
   port: parseInt(process.env.APP_PORT) || 3000,
   ssl: {
@@ -19,6 +21,8 @@ export const EnvironmentVariables = () => ({
     app: {
       id: process.env.DISCORD_APP_ID || '',
       secret: process.env.DISCORD_APP_SECRET || '',
+      scopes: (process.env.DISCORD_APP_SCOPES.split(',') ||
+        []) as OAuth2Scopes[],
     },
   },
 });

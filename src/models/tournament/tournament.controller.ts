@@ -37,6 +37,7 @@ import { MemberRolesEnum } from '../member/enum/roles.enum';
 import { Tournament } from './entities/tournament.entity';
 import { TournamentResponseMessageEnum } from './enum/tournament.response.enum';
 import { TournamentService } from './tournament.service';
+import { TournamentBodyCreateDto } from './validators/tournament.body.dto';
 import {
   TournamentArrayOkResponseDto,
   TournamentBadRequestResponseDto,
@@ -44,7 +45,6 @@ import {
   TournamentNotFoundResponseDto,
   TournamentOKResponseDto,
 } from './validators/tournament.response.dto';
-import { TournamentBodyCreateDto } from './validators/tournament.body.dto';
 
 @Controller('tournament')
 @ApiTags('Tournament')
@@ -103,7 +103,7 @@ export class TournamentController {
   }
 
   @Post()
-  @Authorization(true)
+  @Authorization({ secured: true })
   @ApiCreatedResponse({ type: TournamentCreatedResponseDto })
   @ApiForbiddenResponse({ type: ForbiddenResponseDto })
   @ApiBadRequestResponse({ type: TournamentBadRequestResponseDto })
@@ -134,7 +134,7 @@ export class TournamentController {
   }
 
   @Delete(':id')
-  @Authorization(true)
+  @Authorization({ secured: true })
   @ApiNoContentResponse()
   @ApiNotFoundResponse({ type: TournamentNotFoundResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })

@@ -7,7 +7,7 @@ import {
 } from 'src/common/validators/response.dto';
 import { TournamentResponseMessageEnum } from '../enum/tournament.response.enum';
 
-const TournamentExample = {
+export const TournamentExample = {
   id: '51d0af06-f14b-4932-bba8-697201468cda',
   name: 'Tournament Edition 2024',
   owner: '60f51f4e-4e15-4c2b-9ba9-7675c850d81a',

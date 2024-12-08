@@ -2,13 +2,16 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ResponseMessageDecorator } from 'src/common/decorators/response.decorator';
 import { ResponseMessageEnum } from 'src/common/enum/response.enum';
+import { AuthenticateRequest } from 'src/common/interfaces/request.interface';
 import { TypedConfigService } from 'src/common/services/typed-config.service';
 import { AuthenticationService } from '../models/authentication/authentication.service';
 
@@ -25,8 +28,12 @@ export class AuthGuard implements CanActivate {
       'secured',
       context.getHandler(),
     );
+    const riotSecured = this.reflector.get<boolean>(
+      'riot-secured',
+      context.getHandler(),
+    );
 
-    if (!secured) return true;
+    if (!secured && !riotSecured) return true;
 
     const FormatedForbiddenException = new ForbiddenException({
       statusCode: HttpStatus.FORBIDDEN,
@@ -45,24 +52,27 @@ export class AuthGuard implements CanActivate {
     const bearerToken = context.switchToHttp().getRequest<Request>()
       .headers.authorization;
 
-    if (!bearerToken) throw FormatedForbiddenException;
-
-    const authorizationInformations =
-      await this.authenticationService.getAuthorizationInformations(
-        bearerToken,
-      );
-
-    if (typeof authorizationInformations === 'boolean')
+    if (!bearerToken || !bearerToken.startsWith('Bearer '))
       throw FormatedForbiddenException;
 
-    // verify if token is linked to the application
-    if (
-      authorizationInformations.application.id !==
-      this.configService.get('discord.app.id')
-    )
-      throw FormatedForbiddenException;
+    try {
+      const authenticateUser =
+        await this.authenticationService.getAuthenticateUser(bearerToken);
 
-    // TODO: verify if the scope is correct
+      // check if riot connection is enabled or throw exception
+      if (riotSecured && !authenticateUser.riot)
+        throw FormatedForbiddenException;
+
+      context.switchToHttp().getRequest<AuthenticateRequest>().auth =
+        authenticateUser;
+    } catch (error: HttpException | unknown) {
+      if (
+        !(error instanceof HttpException) ||
+        error.getStatus() >= HttpStatus.INTERNAL_SERVER_ERROR
+      )
+        throw new InternalServerErrorException();
+      throw FormatedForbiddenException;
+    }
 
     return true;
   }

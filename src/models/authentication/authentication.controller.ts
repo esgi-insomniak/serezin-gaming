@@ -1,15 +1,32 @@
-import { Controller, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { RESTPostOAuth2AccessTokenResult } from 'discord-api-types/v10';
+import { Authorization } from 'src/common/decorators/authorization.decorator';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
+import {
+  AuthenticateRequest,
+  AuthenticateUser,
+} from 'src/common/interfaces/request.interface';
 import { ControllerResponseData } from 'src/common/interfaces/response.interface';
-import { InternalServerErrorResponseDto } from 'src/common/validators/response.dto';
+import {
+  ForbiddenResponseDto,
+  InternalServerErrorResponseDto,
+} from 'src/common/validators/response.dto';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationResponseMessageEnum } from './enum/authentication.response.enum';
 import { AuthenticationExchangeCodeParam } from './validators/authentication.params.dto';
@@ -25,6 +42,7 @@ export class AuthenticationController {
 
   @Post('exchange-code/:code')
   @ApiCreatedResponse({ type: AuthenticationExchangeCodeResponseDto })
+  @ApiForbiddenResponse({ type: ForbiddenResponseDto })
   @ApiBadRequestResponse({
     type: AuthenticationExchangeCodeBadRequestResponseDto,
   })
@@ -44,9 +62,34 @@ export class AuthenticationController {
   })
   async exchangeCode(
     @Param() params: AuthenticationExchangeCodeParam,
-  ): Promise<ControllerResponseData<RESTPostOAuth2AccessTokenResult>> {
+  ): Promise<ControllerResponseData<AuthenticateUser>> {
+    const accessTokenResult = await this.authenticationService.exchangeCode(
+      params.code,
+    );
+
     return {
-      result: await this.authenticationService.exchangeCode(params.code),
+      result: await this.authenticationService.getAuthenticateUser(
+        accessTokenResult.token_type + ' ' + accessTokenResult.access_token,
+      ),
+    };
+  }
+
+  @Delete('revoke-token')
+  @Authorization({ secured: true })
+  @ApiNoContentResponse()
+  @ApiForbiddenResponse({ type: ForbiddenResponseDto })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    operationId: 'authenticationRevokeToken',
+  })
+  async revokeToken(
+    @Req() request: AuthenticateRequest,
+  ): Promise<ControllerResponseData<void>> {
+    return {
+      result: await this.authenticationService.revokeAccessToken(
+        request.auth.token.access_token,
+      ),
     };
   }
 }
