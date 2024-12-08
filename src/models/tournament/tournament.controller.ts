@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -43,6 +44,7 @@ import {
   TournamentNotFoundResponseDto,
   TournamentOKResponseDto,
 } from './validators/tournament.response.dto';
+import { TournamentBodyCreateDto } from './validators/tournament.body.dto';
 
 @Controller('tournament')
 @ApiTags('Tournament')
@@ -115,13 +117,16 @@ export class TournamentController {
   @ApiOperation({
     operationId: 'tournamentCreate',
   })
-  async create(): Promise<ControllerResponseData<Tournament>> {
+  async create(
+    @Body() body: TournamentBodyCreateDto,
+  ): Promise<ControllerResponseData<Tournament>> {
     // By default, owner is also a member of the tournament
     const owner = new Member();
     owner.role = MemberRolesEnum.OWNER;
     const tournament = new Tournament();
     tournament.owner = owner;
     tournament.members = [owner];
+    tournament.name = body.name;
 
     return {
       result: await this.tournamentService.create(tournament),

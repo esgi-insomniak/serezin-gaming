@@ -12,6 +12,9 @@ export class Tournament {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
+
   @OneToOne(() => Member, (member) => member.ownTournament, {
     cascade: true,
   })
