@@ -219,16 +219,22 @@ components:
           properties:
             id:
               type: string
+              required: true
             username:
               type: string
+              required: true
             avatar:
               type: string
+              required: true
             discriminator:
               type: string
+              required: true
             public_flags:
               type: number
+              required: true
             flags:
               type: number
+              required: true
             banner:
               type: string
               nullable: true
@@ -249,32 +255,44 @@ components:
               nullable: true
         riot:
           type: object
+          nullable: true
           properties:
             id:
               type: string
+              required: true
             name:
               type: string
+              required: true
             type:
               type: string
+              required: true
             friend_sync:
               type: boolean
+              required: true
             metadata_visibility:
               type: number
+              required: true
             show_activity:
               type: boolean
+              required: true
             two_way_link:
               type: boolean
+              required: true
             verified:
               type: boolean
+              required: true
             visibility:
               type: number
+              required: true
         token:
           type: object
           properties:
             type:
               type: string
+              required: true
             access_token:
               type: string
+              required: true
       required:
         - user
         - riot

@@ -42,13 +42,14 @@ export const AuthenticateUserExample = {
 
 export class AuthenticateUserDto {
   @ApiProperty({
+    required: true,
     properties: {
-      id: { type: 'string' },
-      username: { type: 'string' },
-      avatar: { type: 'string' },
-      discriminator: { type: 'string' },
-      public_flags: { type: 'number' },
-      flags: { type: 'number' },
+      id: { type: 'string', required: true },
+      username: { type: 'string', required: true },
+      avatar: { type: 'string', required: true },
+      discriminator: { type: 'string', required: true },
+      public_flags: { type: 'number', required: true },
+      flags: { type: 'number', required: true },
       banner: { type: 'string', nullable: true },
       accent_color: { type: 'number', nullable: true },
       global_name: { type: 'string', nullable: true },
@@ -60,24 +61,26 @@ export class AuthenticateUserDto {
   user: APIUser;
 
   @ApiProperty({
+    nullable: true,
     properties: {
-      id: { type: 'string' },
-      name: { type: 'string' },
-      type: { type: 'string' },
-      friend_sync: { type: 'boolean' },
-      metadata_visibility: { type: 'number' },
-      show_activity: { type: 'boolean' },
-      two_way_link: { type: 'boolean' },
-      verified: { type: 'boolean' },
-      visibility: { type: 'number' },
+      id: { type: 'string', required: true },
+      name: { type: 'string', required: true },
+      type: { type: 'string', required: true },
+      friend_sync: { type: 'boolean', required: true },
+      metadata_visibility: { type: 'number', required: true },
+      show_activity: { type: 'boolean', required: true },
+      two_way_link: { type: 'boolean', required: true },
+      verified: { type: 'boolean', required: true },
+      visibility: { type: 'number', required: true },
     },
   } as ApiPropertyOptions)
   riot: APIConnection;
 
   @ApiProperty({
+    required: true,
     properties: {
-      type: { type: 'string' },
-      access_token: { type: 'string' },
+      type: { type: 'string', required: true },
+      access_token: { type: 'string', required: true },
     },
   } as ApiPropertyOptions)
   token: {
