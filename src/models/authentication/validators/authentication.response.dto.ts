@@ -46,7 +46,6 @@ export class AuthenticateUserOkDto extends withBaseResponse(
     message: AuthenticationResponseMessageEnum.OK.ME,
   },
   {
-    isArray: true,
-    example: [AuthenticateUserExample],
+    example: AuthenticateUserExample,
   },
 ) {}

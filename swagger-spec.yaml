@@ -258,17 +258,16 @@ components:
           example: Authenticate user fetch sucessfully
         data:
           example:
-            - discord:
-                id: '123456789012345678'
-                username: test
-                avatar: '12345678901234567890122345678912'
-                global_name: Test
-              riot:
-                id: '123456789012345678901234567890123456789012345678901234567890123456789012345678'
-                name: Test#EUW
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthenticateUserDto'
+            discord:
+              id: '123456789012345678'
+              username: test
+              avatar: '12345678901234567890122345678912'
+              global_name: Test
+            riot:
+              id: '123456789012345678901234567890123456789012345678901234567890123456789012345678'
+              name: Test#EUW
+          allOf:
+            - $ref: '#/components/schemas/AuthenticateUserDto'
         meta:
           type: object
       required:
