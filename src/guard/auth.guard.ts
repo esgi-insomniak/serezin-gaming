@@ -63,8 +63,13 @@ export class AuthGuard implements CanActivate {
       if (riotSecured && !authenticateUser.riot)
         throw FormatedForbiddenException;
 
-      context.switchToHttp().getRequest<AuthenticateRequest>().auth =
-        authenticateUser;
+      context.switchToHttp().getRequest<AuthenticateRequest>().auth = {
+        ...authenticateUser,
+        token: {
+          type: 'Bearer',
+          access_token: bearerToken.replace('Bearer ', ''),
+        },
+      };
     } catch (error: HttpException | unknown) {
       if (
         !(error instanceof HttpException) ||

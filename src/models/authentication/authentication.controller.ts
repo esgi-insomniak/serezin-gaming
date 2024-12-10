@@ -1,21 +1,22 @@
 import {
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Param,
-  Post,
+  Query,
   Req,
+  Res,
 } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { Authorization } from 'src/common/decorators/authorization.decorator';
 import { ResponseMessage } from 'src/common/decorators/response.decorator';
 import {
@@ -23,54 +24,67 @@ import {
   AuthenticateUser,
 } from 'src/common/interfaces/request.interface';
 import { ControllerResponseData } from 'src/common/interfaces/response.interface';
+import { TypedConfigService } from 'src/common/services/typed-config.service';
 import {
   ForbiddenResponseDto,
   InternalServerErrorResponseDto,
 } from 'src/common/validators/response.dto';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationResponseMessageEnum } from './enum/authentication.response.enum';
-import { AuthenticationExchangeCodeParam } from './validators/authentication.params.dto';
-import {
-  AuthenticationExchangeCodeBadRequestResponseDto,
-  AuthenticationExchangeCodeResponseDto,
-} from './validators/authentication.response.dto';
+import { AuthenticationLoginQuery } from './validators/authentication.query.dto';
+import { AuthenticateUserOkDto } from './validators/authentication.response.dto';
 
 @Controller('authentication')
 @ApiTags('Authentication')
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly configService: TypedConfigService,
+  ) {}
 
-  @Post('exchange-code/:code')
-  @ApiCreatedResponse({ type: AuthenticationExchangeCodeResponseDto })
-  @ApiForbiddenResponse({ type: ForbiddenResponseDto })
-  @ApiBadRequestResponse({
-    type: AuthenticationExchangeCodeBadRequestResponseDto,
-  })
-  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
-  @ResponseMessage([
-    {
-      status: HttpStatus.CREATED,
-      message: AuthenticationResponseMessageEnum.CREATED.EXCHANGE_CODE,
-    },
-    {
-      status: HttpStatus.BAD_REQUEST,
-      message: AuthenticationResponseMessageEnum.BAD_REQUEST.EXCHANGE_CODE,
-    },
-  ])
+  @Get('login')
+  @ApiOkResponse()
   @ApiOperation({
-    operationId: 'authenticationExchangeCode',
+    operationId: 'authenticationLogin',
   })
-  async exchangeCode(
-    @Param() params: AuthenticationExchangeCodeParam,
-  ): Promise<ControllerResponseData<AuthenticateUser>> {
-    const accessTokenResult = await this.authenticationService.exchangeCode(
-      params.code,
-    );
+  async login(
+    @Query() query: AuthenticationLoginQuery,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    try {
+      const accessTokenResult = await this.authenticationService.exchangeCode(
+        query.code,
+      );
+      response.cookie('access_token', accessTokenResult.access_token);
+    } catch {
+      response.cookie('login_error', true);
+    }
 
+    response.redirect(
+      HttpStatus.MOVED_PERMANENTLY,
+      this.configService.get('discord.api.oauth2.frontendRedirectUri'),
+    );
+  }
+
+  @Get('me')
+  @Authorization({ secured: true })
+  @ApiOkResponse({ type: AuthenticateUserOkDto })
+  @ApiForbiddenResponse({ type: ForbiddenResponseDto })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
+  @ApiOperation({
+    operationId: 'authenticationGetMe',
+  })
+  @ResponseMessage([
+    { status: HttpStatus.OK, message: AuthenticationResponseMessageEnum.OK.ME },
+  ])
+  async getMe(
+    @Req() request: AuthenticateRequest,
+  ): Promise<ControllerResponseData<AuthenticateUser>> {
     return {
-      result: await this.authenticationService.getAuthenticateUser(
-        accessTokenResult.token_type + ' ' + accessTokenResult.access_token,
-      ),
+      result: {
+        discord: request.auth.discord,
+        riot: request.auth.riot,
+      },
     };
   }
 

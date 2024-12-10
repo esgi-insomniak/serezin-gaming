@@ -4,6 +4,9 @@ import { Request } from 'express';
 export interface AuthenticateUser {
   discord: Pick<APIUser, 'id' | 'username' | 'avatar' | 'global_name'>;
   riot?: Pick<APIConnection, 'id' | 'name'>;
+}
+
+export interface AuthenticateUserWithToken extends AuthenticateUser {
   token: {
     type: string;
     access_token: string;
@@ -11,5 +14,5 @@ export interface AuthenticateUser {
 }
 
 export interface AuthenticateRequest extends Request {
-  auth: AuthenticateUser;
+  auth: AuthenticateUserWithToken;
 }

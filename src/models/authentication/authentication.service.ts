@@ -42,7 +42,9 @@ export class AuthenticationService {
     const requestBody = {
       grant_type: 'authorization_code',
       code,
-      redirect_uri: this.configService.get('discord.api.oauth2.redirectUri'),
+      redirect_uri: this.configService.get(
+        'discord.api.oauth2.backendRedirectUri',
+      ),
     };
 
     try {
@@ -132,10 +134,6 @@ export class AuthenticationService {
         riot: {
           id: riotConnection?.id,
           name: riotConnection?.name,
-        },
-        token: {
-          type: 'Bearer',
-          access_token: bearerToken.replace('Bearer ', ''),
         },
       };
     } catch (error: HttpException | unknown) {

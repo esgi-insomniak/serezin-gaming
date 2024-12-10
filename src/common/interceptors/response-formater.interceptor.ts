@@ -7,6 +7,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Response as ExpressResponse } from 'express';
 import { map, Observable, tap } from 'rxjs';
 import { ResponseMessageDecorator } from '../decorators/response.decorator';
 import {
@@ -28,7 +29,11 @@ export class ResponseFormaterInterceptor<T, M>
   ): Observable<FormatedResponseBody<T, M>> {
     return next.handle().pipe(
       map((data: ControllerResponseData<T, M>): FormatedResponseBody<T, M> => {
-        const statusCode = context.switchToHttp().getResponse().statusCode;
+        const response = context.switchToHttp().getResponse<ExpressResponse>();
+        const statusCode = response.statusCode;
+
+        // Stop sending if response already sent
+        if (response.headersSent) return;
 
         return {
           statusCode,

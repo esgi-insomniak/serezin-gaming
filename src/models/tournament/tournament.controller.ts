@@ -66,9 +66,9 @@ export class TournamentController {
     },
   ])
   @ApiOperation({
-    operationId: 'tournamentFindAll',
+    operationId: 'tournamentGetAll',
   })
-  async findAll(
+  async getAll(
     @Query() query: QueryPaginationDto,
   ): Promise<ControllerResponseData<Tournament[]>> {
     return await this.tournamentService.findAll(query);
@@ -90,9 +90,9 @@ export class TournamentController {
     },
   ])
   @ApiOperation({
-    operationId: 'tournamentFindOne',
+    operationId: 'tournamentGetOneById',
   })
-  async findOne(
+  async getOneById(
     @Param() params: ParamGetItemByIdDto,
   ): Promise<ControllerResponseData<Tournament>> {
     const tournament = await this.tournamentService.findOne(params);
@@ -146,9 +146,9 @@ export class TournamentController {
   ])
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    operationId: 'tournamentRemove',
+    operationId: 'tournamentRemoveById',
   })
-  async remove(
+  async removeById(
     @Param() params: ParamGetItemByIdDto,
   ): Promise<ControllerResponseData<DeleteResult>> {
     const tournament = await this.tournamentService.findOne(params);

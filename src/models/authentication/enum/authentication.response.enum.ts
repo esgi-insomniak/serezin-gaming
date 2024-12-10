@@ -1,12 +1,5 @@
-enum CREATED {
-  EXCHANGE_CODE = 'Code exchange sucessfully',
-}
-
-enum BAD_REQUEST {
-  EXCHANGE_CODE = 'Code malformed',
-}
-
-export const AuthenticationResponseMessageEnum = {
-  CREATED,
-  BAD_REQUEST,
+const OK = {
+  ME: 'Authenticate user fetch sucessfully',
 };
+
+export const AuthenticationResponseMessageEnum = { OK };

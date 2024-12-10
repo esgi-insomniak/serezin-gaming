@@ -1,10 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptions } from '@nestjs/swagger';
 import { APIConnection, APIUser } from 'discord-api-types/v10';
-import {
-  withBaseErrorResponse,
-  withBaseResponse,
-} from 'src/common/validators/response.dto';
+import { withBaseResponse } from 'src/common/validators/response.dto';
 import { AuthenticationResponseMessageEnum } from '../enum/authentication.response.enum';
 
 export const AuthenticateUserExample = {
@@ -17,10 +14,6 @@ export const AuthenticateUserExample = {
   riot: {
     id: '123456789012345678901234567890123456789012345678901234567890123456789012345678',
     name: 'Test#EUW',
-  },
-  token: {
-    type: 'Bearer',
-    access_token: 'EzaSJRlojeSh1FQ5YuIfOsJkr9RMxE',
   },
 };
 
@@ -44,34 +37,16 @@ export class AuthenticateUserDto {
     },
   } as ApiPropertyOptions)
   riot: APIConnection;
-
-  @ApiProperty({
-    required: true,
-    properties: {
-      type: { type: 'string', required: true },
-      access_token: { type: 'string', required: true },
-    },
-  } as ApiPropertyOptions)
-  token: {
-    type: string;
-    access_token: string;
-  };
 }
 
-export class AuthenticationExchangeCodeResponseDto extends withBaseResponse(
+export class AuthenticateUserOkDto extends withBaseResponse(
   AuthenticateUserDto,
   {
-    statusCode: HttpStatus.CREATED,
-    message: AuthenticationResponseMessageEnum.CREATED.EXCHANGE_CODE,
+    statusCode: HttpStatus.OK,
+    message: AuthenticationResponseMessageEnum.OK.ME,
   },
   {
-    example: AuthenticateUserExample,
-  },
-) {}
-
-export class AuthenticationExchangeCodeBadRequestResponseDto extends withBaseErrorResponse(
-  {
-    statusCode: HttpStatus.BAD_REQUEST,
-    message: AuthenticationResponseMessageEnum.BAD_REQUEST.EXCHANGE_CODE,
+    isArray: true,
+    example: [AuthenticateUserExample],
   },
 ) {}

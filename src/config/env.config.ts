@@ -15,7 +15,10 @@ export const EnvironmentVariables = () => ({
   discord: {
     api: {
       oauth2: {
-        redirectUri: process.env.DISCORD_API_OAUTH_REDIRECT_URI || '',
+        backendRedirectUri:
+          process.env.DISCORD_API_OAUTH_BACKEND_REDIRECT_URI || '',
+        frontendRedirectUri:
+          process.env.DISCORD_API_OAUTH_FRONTEND_REDIRECT_URI || '',
       },
     },
     app: {
